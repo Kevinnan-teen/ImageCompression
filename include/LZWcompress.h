@@ -35,6 +35,7 @@ public:
 	void decode_init();
 	void LZW_encode();
 	void LZW_decode();
+	std::vector<uint> get_lzw_encode();
 	
 
 

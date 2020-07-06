@@ -166,5 +166,10 @@ void LZWcompress::LZW_decode(){
 	// for(auto iter = lzw_decode_output.begin(); iter != lzw_decode_output.end(); iter++)
 	// 	cout<<*iter<<"\t";
 	// cout<<endl;
+}
 
+
+
+std::vector<uint> get_lzw_encode(){
+	return lzw_decode_output;
 }
