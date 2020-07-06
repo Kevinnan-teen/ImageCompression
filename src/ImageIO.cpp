@@ -50,7 +50,7 @@ Image * ImageIO::readImage(string & fileName){
 		dataSize = width * height * 3;
 	}
 	
-	cout<<"dataSize:"<<dataSize<<endl;
+	//cout<<"dataSize:"<<dataSize<<endl;
 
 	//读图像数据
 	fseek(imageFile, imageInfoHeadSize, 0);

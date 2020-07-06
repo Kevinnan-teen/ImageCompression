@@ -46,11 +46,16 @@ int main(){
 	ImageIO::writeImage(recoverFileName, recoverFile);
 
 
-	string ss = "abc.cc";
-	cout<<ss.substr(ss.length()-2, 2)<<endl;
 
-	
+	#ifdef linux		
+	cout<<"This is linux"<<endl;
+	#endif
+
+	#ifdef __WINDOWS_
+	cout<<"This is Windows"<<endl;
 	system("pause");
+	#endif
+
 
 
 	return 0;
