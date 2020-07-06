@@ -7,8 +7,12 @@
 #ifndef IMAGECOMPRESSION_TOOLS_H
 #define IMAGECOMPRESSION_TOOLS_H
 
-#include<iostream>
-#include<string>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+
 using namespace std;
 typedef unsigned char uchar;
 typedef unsigned int uint;
@@ -21,7 +25,8 @@ public:
 	static uchar * RGB2YUV(uchar * , uint , uint , uint );
 
 	static uchar * YUV2RGB(uchar * , uint );
-	
+
+	static std::vector<std::string> splitStr(const std::string &str,const std::string &pattern);	
 };
 
 #endif
