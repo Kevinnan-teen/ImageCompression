@@ -116,3 +116,22 @@ std::vector<std::string> Tools::splitStr(const std::string &str,const std::strin
     
     return resVec;
 }
+
+
+char Tools::bitset2char(std::bitset<8> bits)
+{
+	return (char)bitset<8>(bits.to_string()).to_ulong();
+}
+
+std::vector<uchar> Tools::Int2CharVector(uint data){
+	std::vector<uchar> buf;
+	bitset<32> data_bit(data);
+	string data_bit_str = data_bit.to_string();
+	for(int i = 0; i < 4; i++){
+		//string key_bit_str_part = key_bit_str.substr(i*8, 8);
+		//string value_bit_str_part = value_bit_str.substr(i*8, 8);
+		bitset<8> data_bit_part(data_bit_str.substr(i*8, 8));
+		buf.push_back(bitset2char(data_bit_part));
+	}
+	return buf;
+}

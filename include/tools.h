@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <bitset>
 #include <algorithm>
 
 using namespace std;
@@ -27,6 +28,12 @@ public:
 	static uchar * YUV2RGB(uchar * , uint );
 
 	static std::vector<std::string> splitStr(const std::string &str,const std::string &pattern);	
+
+	static char bitset2char(std::bitset<8> bits);
+	
+	//static std::bitset<32> char2bitset(std::vector<char> buf);
+
+	static std::vector<uchar> Int2CharVector(uint data);
 };
 
 #endif
