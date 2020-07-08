@@ -30,11 +30,24 @@ public:
 	//bmp文件头大小为54字节
 	static const int imageInfoHeadSize;
 
+	//霍夫曼压缩后，霍夫曼编码信息头大小
+	static const int ylfInfoSize;
+
 	//读bmp图像,返回图像信息
 	static Image * readImage(string &);
 
 	//将文件头和数据写入文件,也即恢复原图像
 	static void writeImage(string & , Image *);
+
+	static void read_Huffman_encode_file(const string& fileName, 
+									     std::vector<uchar>& Data,
+									     uint& weightMapKeySize,
+									     uint& weightMapValueSize, 
+									     uint& dataSize,
+									     uint& sum_size,
+									     uint& bit_sum_length);
+
+	//static void write_Huffman_encode_file(string& fileName, Image* image);
 
 };
 

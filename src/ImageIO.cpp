@@ -16,6 +16,8 @@ const int ImageIO::imageHeightPosition = 22;
 
 const int ImageIO::imageInfoHeadSize = 54;
 
+const int ImageIO::ylfInfoSize = 16;
+
 
 Image * ImageIO::readImage(string & fileName){
 	FILE * imageFile = fopen(fileName.c_str(), "rb+");	
@@ -71,4 +73,66 @@ void ImageIO::writeImage(string & revocerFileName, Image * image){
 	fwrite(image->getData(), sizeof(uchar), image->getDataSize(), recover_file);
 	fclose(recover_file);
 	cout<<"finish writing!"<<endl;
+}
+
+
+void ImageIO::read_Huffman_encode_file(const string& fileName, 
+									   std::vector<uchar>& Data,
+									   uint& weightMapKeySize,
+									   uint& weightMapValueSize, 
+									   uint& dataSize,
+									   uint& sum_size,
+									   uint& bit_sum_length){
+	FILE * imageFile = fopen(fileName.c_str(), "rb+");	
+	if(imageFile == nullptr){
+		cout<<"空文件"<<endl;
+		exit(EXIT_FAILURE);
+	}
+
+	//读bmp信息头
+	uchar * imageInfo = new uchar[imageInfoHeadSize];
+	fread(imageInfo, sizeof(uchar), imageInfoHeadSize, imageFile);
+
+	//读霍夫曼编码信息头
+	uchar* ylfInfo = new uchar[ylfInfoSize];
+	fread(ylfInfo, sizeof(uchar), ylfInfoSize, imageFile);
+
+	string weightMapKeyStr = "", weightMapValueStr = "", dataStr = "", bitSumLengthStr="";
+	//int weightMapKeySize, weightMapValueSize, dataSize;
+
+	for(int i = 0; i < 4; i++){
+		weightMapKeyStr += Tools::Char2Hex(ylfInfo[i]);
+	}
+	//权重表key总bytes
+	weightMapKeySize = stoi(weightMapKeyStr, nullptr, 16);
+
+	for(int i = 4; i < 8; i++){
+		weightMapValueStr += Tools::Char2Hex(ylfInfo[i]);
+	}
+	//权重表value总bytes
+	weightMapValueSize = stoi(weightMapValueStr, nullptr, 16);
+
+	for(int i = 8; i < 12; i++){
+		dataStr += Tools::Char2Hex(ylfInfo[i]);
+	}
+	//霍夫曼编码数据总bytes
+	dataSize = stoi(dataStr, nullptr, 16);
+
+	for(uint i = 12; i < 16; i++){
+		bitSumLengthStr += Tools::Char2Hex(ylfInfo[i]);
+	}
+	bit_sum_length = stoi(bitSumLengthStr, nullptr, 16);
+
+	//ylf数据总bytes
+	sum_size = weightMapKeySize + weightMapValueSize + dataSize;
+
+	uchar * data = new uchar[sum_size];
+	fread(data, sizeof(uchar), sum_size, imageFile);
+	fclose(imageFile);
+
+	for(int i = 0; i < sum_size; i++){
+		Data.push_back(data[i]);
+	}
+
+	//Image * image = new Image(imageInfo, data, 0, 0, sum_size);
 }

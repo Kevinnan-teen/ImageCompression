@@ -8,7 +8,7 @@
 #include"Image.h"
 #include<iostream>
 
-Image::Image(uchar * imageInfo, uchar * data, uint width, uint height, uint dataSize){
+Image::Image(uchar * imageInfo, uchar * data, uint width=0, uint height=0, uint dataSize=0){
 	this->imageInfo = imageInfo;
 	this->data = data;
 	this->width = width;
