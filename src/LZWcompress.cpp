@@ -75,14 +75,6 @@ void LZWcompress::LZW_encode(){
 	}
 	lzw_encode_output.push_back(encode_map[p_and_c]);
 
-	// int j = 0;
-	// for(auto iter = encode_map.begin(); iter != encode_map.end(); iter++){
-	// 	cout<<iter->first<<"\t"<<iter->second<<endl;
-	// 	// if(j == 300)
-	// 	// 	break;
-	// 	// j++;
-	// }
-
 	cout<<"symbol:"<<symbol<<endl;
 
 	// cout<<"encode_output:"<<endl;
@@ -170,6 +162,6 @@ void LZWcompress::LZW_decode(){
 
 
 
-std::vector<uint> get_lzw_encode(){
-	return lzw_decode_output;
+std::vector<uint> LZWcompress::get_lzw_encode(){
+	return lzw_encode_output;
 }
