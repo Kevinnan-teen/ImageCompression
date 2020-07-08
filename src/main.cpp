@@ -7,9 +7,9 @@
 using namespace std;
 
 int main(){
-	string fileName = "../images/bmp_test.bmp";
-	string yuvFileName = "../images/yuv_test.yuv";
-	string recoverFileName = "../images/recoverImage.bmp";
+	string fileName = "../images/her.bmp";
+	string yuvFileName = "../images/her_test.yuv";
+	string recoverFileName = "../images/recoverHer.bmp";
 
 	Image * image = ImageIO::readImage(fileName);
 
