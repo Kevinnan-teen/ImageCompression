@@ -123,6 +123,7 @@ char Tools::bitset2char(std::bitset<8> bits)
 	return (char)bitset<8>(bits.to_string()).to_ulong();
 }
 
+
 std::vector<uchar> Tools::Int2CharVector(uint data){
 	std::vector<uchar> buf;
 	bitset<32> data_bit(data);
