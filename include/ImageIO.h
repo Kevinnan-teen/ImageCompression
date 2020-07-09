@@ -49,6 +49,8 @@ public:
 
 	//static void write_Huffman_encode_file(string& fileName, Image* image);
 
+	static Image* readlzwFile(string & fileName);
+	
 };
 
 #endif

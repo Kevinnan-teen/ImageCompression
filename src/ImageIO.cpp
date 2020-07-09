@@ -133,6 +133,36 @@ void ImageIO::read_Huffman_encode_file(const string& fileName,
 	for(int i = 0; i < sum_size; i++){
 		Data.push_back(data[i]);
 	}
+}
 
-	//Image * image = new Image(imageInfo, data, 0, 0, sum_size);
+Image* ImageIO::readlzwFile(string & fileName){
+	FILE * imageFile = fopen(fileName.c_str(), "rb+");	
+	if(imageFile == nullptr){
+		cout<<"空文件"<<endl;
+		exit(EXIT_FAILURE);
+	}
+
+	//读bmp文件头
+	uchar * imageInfo = new uchar[imageInfoHeadSize];
+	fread(imageInfo, sizeof(uchar), imageInfoHeadSize, imageFile);
+
+	//读取lzw数据大小
+	uchar * lzwSizeInfo = new uchar[4];
+	fread(lzwSizeInfo, sizeof(uchar), 4, imageFile);
+
+	uint encode_size;
+	string encodeSizeStr = "";
+	for(int i = 0; i < 4; i++){
+		encodeSizeStr += Tools::Char2Hex(lzwSizeInfo[i]);
+	}
+	encode_size = stoi(encodeSizeStr, nullptr, 16);
+	//cout<<"read_lzw_size::"<<encode_size<<endl;
+
+	uchar* lzw_encode_data = new uchar[encode_size];
+	fread(lzw_encode_data, sizeof(uchar), encode_size, imageFile);
+	fclose(imageFile);
+
+	Image* image = new Image(imageInfo, lzw_encode_data, 0, 0, encode_size);
+
+	return image;
 }
