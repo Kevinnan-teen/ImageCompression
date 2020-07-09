@@ -7,69 +7,110 @@
 #include "ImageIO.h"
 #include "tools.h"
 #include "LZWcompress.h"
-#include "HuffmanCompression.h"
 
 using namespace std;
 typedef unsigned int uint;
 
-int main(){
-	string fileName = "../images/bmp_test.bmp";
-	string yuvFileName = "../images/yuv_test.yuv";
-	string recoverFileName = "../images/recoverImage.bmp";
+
+void encode(){
+	//BGR转YUV　+ LZW压缩算法
+	string fileName = "../images/bmp_test.bmp";		//可改为你自己的图片路径
+	string saveFileName = "../images/lzw.ylf";		
 
 	Image * image = ImageIO::readImage(fileName);
 
-	// for(int i = image->getDataSize() - 100; i < image->getDataSize(); i++){
-	// 	cout<<int(*(image->getData()+i))<<"\t";
-	// }
-	// cout<<endl;
-
-	//写入压缩后文件
 	uchar * YUVdata = new uchar[image->getDataSize() / 2];
 	YUVdata = Tools::RGB2YUV(image->getData(), image->getWidth(), image->getHeight(), image->getDataSize());
 
 	LZWcompress * lzw = new LZWcompress(YUVdata, image->getDataSize() / 2);
 	lzw->LZW_encode();
+	//lzw->LZW_decode();
+
+	lzw->get_lzw_encode();	//得到输出编码的char型数据
+
+	Image * lzwFile = new Image(image->getImageInfo(), lzw->get_lzw_encode(), 
+								0, 0, lzw->get_encode_size()+4);
+
+	ImageIO::writeImage(saveFileName, lzwFile);
+}
+
+void decode(){
+	//BGR转YUV　+ LZW压缩算法
+	string fileName = "../images/lzw.ylf";
+	string recoverFileName = "../images/recoverImage.bmp";
+
+	Image* lzwFile = ImageIO::readlzwFile(fileName);
+
+	cout<<lzwFile->getDataSize()<<endl;
+
+	LZWcompress * lzw = new LZWcompress();
+	lzw->set_encode_data(lzwFile->getData(), lzwFile->getDataSize());
 	lzw->LZW_decode();
 
-	HuffmanCompression * huffman2 = new HuffmanCompression(lzw->get_lzw_encode());
-
-	//HuffmanCompression * huffman2 = new HuffmanCompression();
-	// huffman2->build_Huffman_Tree();
-
-	// std::map<uint, string> huffman_code;
-	// huffman2->traverse_tree(huffman2->getRoot(), "", huffman_code);
-	// cout<<"code_result:"<<endl;
-	// // for(auto iter = huffman_code.begin(); iter != huffman_code.end(); iter++)
-	// // 	cout<<iter->first<<"\t"<<iter->second<<endl;
-	// cout<<"huffman_code_size:"<<huffman_code.size()<<endl;
-
-	huffman2->Huffman_encode();
-
-	cout<<"*******"<<endl;
+	//lzw解码得到YUV数据
+	uchar* YUVdata = new uchar[lzw->get_decode_size()];
+	YUVdata = lzw->get_lzw_decode();
 
 
+	uchar * BGRData = new uchar[lzw->get_decode_size()*2];
 
-	// LZWcompress * lzw2 = new LZWcompress();
-	// lzw2->LZW_encode();
-	// lzw2->LZW_decode();	
-
-	uint a = 128;
-	string str = "00000000";
-	bitset<32>  bset(a);
-	bitset<8>  bset2(str);
-	cout<<bset<<"\t"<<bset2<<endl;
-
-	// char b = '0';
-	// cout<<int(b)<<endl;
-	// Tools::bitset2char(bset);
-	// //cout<<Tools::bitset2char(bset)<<endl;
-	// // for(auto iter = Tools::bitset2char(bset).begin(); iter != Tools::bitset2char(bset).end(); iter++){
-	// // 	cout<<int(*iter)<<"\t";
-	// // }
-	// cout<<endl<<Tools::char2bitset(Tools::bitset2char(bset))<<endl;
+	BGRData = Tools::YUV2RGB(YUVdata, lzw->get_decode_size());
 
 
+	Image * recoverFile = new Image(lzwFile->getImageInfo(), BGRData, 0,
+		0, lzw->get_decode_size()*2);
+
+	ImageIO::writeImage(recoverFileName, recoverFile);
+
+}
+
+void encode_2(){
+	//只包括LZW压缩算法
+	string fileName = "../images/bmp_test.bmp";
+	string saveFileName = "../images/lzw_test.lzw";
+
+	Image * image = ImageIO::readImage(fileName);
+
+
+	LZWcompress * lzw = new LZWcompress(image->getData(), image->getDataSize());
+	lzw->LZW_encode();
+	//lzw->LZW_decode();
+
+	lzw->get_lzw_encode();	//得到输出编码的char型数据
+
+	Image * lzwFile = new Image(image->getImageInfo(), lzw->get_lzw_encode(), 
+								0, 0, lzw->get_encode_size()+4);
+
+	ImageIO::writeImage(saveFileName, lzwFile);
+}
+
+void decode_2(){
+	//只包括LZW压缩算法
+	string fileName = "../images/lzw_test.lzw";
+	string recoverFileName = "../images/recoverImage_2.bmp";
+
+	Image* lzwFile = ImageIO::readlzwFile(fileName);
+
+	cout<<lzwFile->getDataSize()<<endl;
+
+	LZWcompress * lzw = new LZWcompress();
+	lzw->set_encode_data(lzwFile->getData(), lzwFile->getDataSize());
+	lzw->LZW_decode();
+
+
+	Image * recoverFile = new Image(lzwFile->getImageInfo(), lzw->get_lzw_decode(), 0,
+		0, lzw->get_decode_size());
+
+	ImageIO::writeImage(recoverFileName, recoverFile);
+}
+
+int main(){
+	// encode()和decode()函数为BGR转YUV　+ LZW算法对图像进行压缩，为有损压缩
+	// encode_2()和decode_2()函数为 LZW算法对图像进行压缩，为无损压缩
+	encode();
+	decode();
+	encode_2();
+	decode_2();
 
 
 
