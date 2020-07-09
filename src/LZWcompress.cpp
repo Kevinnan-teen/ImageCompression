@@ -14,9 +14,9 @@ LZWcompress::LZWcompress(uchar * YUVdata, uint size){
 }
 
 LZWcompress::LZWcompress(){
-	for(int i = 0; i < 20; i++){
-		YUVdata_n.push_back(to_string(i%10));
-	}
+// 	for(int i = 0; i < 20; i++){
+// 		YUVdata_n.push_back(to_string(i%10));
+// 	}
 }
 
 void LZWcompress::display(){
@@ -77,10 +77,6 @@ void LZWcompress::LZW_encode(){
 
 	cout<<"symbol:"<<symbol<<endl;
 
-	// cout<<"encode_output:"<<endl;
-	// for(auto iter = lzw_encode_output.begin(); iter != lzw_encode_output.end(); iter++)
-	// 	cout<<*iter<<"\t";
-	// cout<<endl;
 
 }
 
@@ -88,9 +84,7 @@ void LZWcompress::LZW_encode(){
 void LZWcompress::LZW_decode(){
 	decode_init();
 	uint symbol = 256;
-	// for(auto iter = lzw_encode_output.begin(); iter != lzw_encode_output.end(); iter++){
-	// 	cout<<*iter<<"\t";
-	// }
+
 	cout<<"encode_size:"<<lzw_encode_output.size()<<endl;
 
 	int previous_symbol = -1, current_symbol = -1;
@@ -102,12 +96,8 @@ void LZWcompress::LZW_decode(){
 
 	for(auto iter = (lzw_encode_output.begin()+1); iter != lzw_encode_output.end(); iter++){
 		current_symbol = *iter;
-		// cout<<"come here"<<endl;
-		// cout<<"current_symbol:"<<current_symbol<<endl;
-		// cout<<"previous_symbol:"<<previous_symbol<<endl;
 		if(decode_map.find(current_symbol) != decode_map.end()){
 			//symbol在字典中
-			//cout<<"come here22"<<endl;
 			auto decode_vector = Tools::splitStr(decode_map[current_symbol], "-");
 			for(auto iter = decode_vector.begin(); iter != decode_vector.end(); iter++)
 				lzw_decode_output.push_back(*iter);
@@ -122,10 +112,8 @@ void LZWcompress::LZW_decode(){
 			
 		}else{
 			//symbol不在字典中
-			//cout<<"come here33"<<endl;
 			previous_char = decode_map[previous_symbol];
-			
-			//cout<<"decode_map:"<<decode_map[previous_symbol]<<endl;
+
 			current_char = Tools::splitStr(decode_map[previous_symbol], "-")[0];
 			if(previous_char != "")
 				p_and_c = previous_char + "-" + current_char;
@@ -141,27 +129,57 @@ void LZWcompress::LZW_decode(){
 		}
 		previous_symbol = current_symbol;
 	}
-
-	// cout<<"decode_map:"<<endl;
-	// for(auto iter = decode_map.begin(); iter != decode_map.end(); iter++){
-	// 	cout<<iter->first<<"\t"<<iter->second<<endl;
-	// }
-
-
-	cout<<"decode_size:"<<lzw_decode_output.size()<<endl;
-	cout<<"origin:"<<YUVdata_n.size()<<endl;
-	// for(auto iter = lzw_decode_output.begin(); iter != (lzw_decode_output.end()); iter++)
-	// 	cout<<*iter<<"\t";
-	// cout<<endl<<"***********"<<endl;
-	// for(auto iter = YUVdata_n.begin(); iter != (YUVdata_n.end()); iter++)
-	// 	cout<<*iter<<"\t";
-	// for(auto iter = lzw_decode_output.begin(); iter != lzw_decode_output.end(); iter++)
-	// 	cout<<*iter<<"\t";
-	// cout<<endl;
 }
 
 
 
-std::vector<uint> LZWcompress::get_lzw_encode(){
-	return lzw_encode_output;
+uchar* LZWcompress::get_lzw_encode(){
+	
+	uchar* lzw_encode_data = new uchar[lzw_encode_output.size()*4+4];
+	int k = 0;
+	//保存lzw压缩文件大小
+	for(int i = 0; i < 4; i++){
+		std::vector<uchar> char_vector = Tools::Int2CharVector(get_encode_size());
+		lzw_encode_data[k++] = char_vector[i];
+	}
+	for(auto iter = lzw_encode_output.begin(); iter != lzw_encode_output.end(); iter++){
+		std::vector<uchar> char_vector = Tools::Int2CharVector(*iter);
+		for(int i = 0; i < 4; i++){
+			lzw_encode_data[k++] = char_vector[i];
+		}
+	}
+	return lzw_encode_data;
 }
+
+
+uchar* LZWcompress::get_lzw_decode(){
+	uchar* lzw_decode_data = new uchar[lzw_decode_output.size()];
+	for(int i = 0; i < lzw_decode_output.size(); i++){
+		lzw_decode_data[i] = uchar(stoi(lzw_decode_output[i]));
+	}
+	cout<<"lzw_decode_data:"<<lzw_decode_output.size()<<endl;
+	return lzw_decode_data;
+}
+
+
+uint LZWcompress::get_encode_size(){
+	return lzw_encode_output.size() * 4;
+}
+
+uint LZWcompress::get_decode_size(){
+	return lzw_decode_output.size();
+}
+
+
+void LZWcompress::set_encode_data(uchar* lzw_encode_data, uint encode_size){
+	for(int i = 0; i < encode_size; i+=4){
+		string str = "";
+		for(int j = 0; j < 4; j++){
+			str += Tools::Char2Hex(lzw_encode_data[i+j]);
+		}
+		lzw_encode_output.push_back(stoi(str, nullptr, 16));
+	}
+	cout<<lzw_encode_output.size()<<endl;
+}
+
+
