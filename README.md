@@ -1,19 +1,39 @@
 # 基于YUV色域转换和LZW编码的BMP图像压缩 
 
-### **项目语言**
+### 一、项目语言
 C++(std=C++11)
 
-### **操作系统**
+### 二、操作系统
 windos10＋ubuntu16.04　均测试通过
 
-### **文件要求**
+### 三、运行方式
+
+1. 进入目录内
+
+> cd ImageCompression
+
+2. 新建build目录
+
+> mkdir build
+
+3. cmake编译项目，生成Makefile
+
+> cmake ..
+
+4. make编译
+
+> make 
+
+5. 运行
+
+### 四、文件要求
 
 - 目前只支持BMP24位的图像格式．
 - 提供两种压缩方式
   - 无损压缩：LZW压缩(生成文件后缀名为.lzw)
   - 有损压缩：RGB转YUV + LZW压缩(生成文件后缀名为.ylf)
 
-### **算法流程**
+### 五、算法流程
 
 - 压缩
   - 读取bmp文件，保存54位信息头，将剩余的数据BGR数据全部转为YUV格式的数据(由于转为YUV后数据是浮点型，而为了实现压缩功能，我们丢弃部分的精度，只保存Int型数据)，经过这一步转换就可以实现50%的压缩．
@@ -22,16 +42,31 @@ windos10＋ubuntu16.04　均测试通过
   - 读取压缩文件，同样保存bmp的54位信息头，读取剩余所有数据丢进LZW解压缩算法得到YUV数据．
   - 将YUV数据转为BGR数据，即可恢复．
 
-### **项目结构**
+### 六、项目结构说明
 
-![](images/structure.png)
+1. **include / src** : 头文件/源文件
 
-- image.h　用于存储图像信息
-- ImageIO.h 用于读取和写入图像和压缩后的文件
-- LZWcompress.h LZW编码与解码
-- tools.h 常用的功能函数，如下．
+   - image.h image.cpp : 存储图像信息
 
-### **读取和写入图像二进制常用的函数**
+   - ImageIO.h ImageIO.cpp 读取和写入图像和压缩后的文件
+
+   - LZWcompress.h LZWcompress.cpp : LZW编码与解码
+
+   - tools.h tools.cpp : 常用的功能函数，如下．
+   - main2.cpp : 主程序入口
+
+2. **images** : 测试图像
+
+   - bmp_test.bmp : 测试原图
+   - lzw.ylf : 有损压缩结果
+   - lzw_test.lzw : 无损压缩结果
+   - recoverImage.bmp : 有损压缩恢复结果
+   - recoverImage_2.bmp : 无损压缩恢复结果
+   - result_1.png  result_2.png   result_3.jpg   result_4.jpg  : 对比结果
+
+3. **backup** : 霍夫曼编码相关代码（因为某些原因没能实现在LZW压缩的基础上进一步做霍夫曼编码，因此将霍夫曼编码的代码放在backup文件夹下，日后有机会再做）。
+
+### 七、读取和写入图像二进制常用的函数（位于自定义的tools类下）
 
 - Char2Hex ：将单个字符转为16进制字符串
 
@@ -102,42 +137,15 @@ std::vector<uchar> Int2CharVector(uint data){
 }
 ```
 
-### **运行方式**
-
-- 新建build目录，然后进入build目录
-
-```
-mkdir build
-cd build
-```
-
-- cmake编译项目
-
-```
-cmake ..
-```
-
-- 如果编译成功，则会在build下生成Makefile文件，make编译即可
-
-```
-make
-```
-
-- 编译之后会生成名为`main2`的可执行文件，可直接运行
-
-```
-./main2
-```
-
-### **测试运行结果**
+### 八、测试运行结果
 
 - 无损压缩
 
 ![](images/result_1.png)
 
-![](images/result_3)
-
 可以看到原图与压缩后恢复的图像基本没有差别
+
+![](images/result_3.jpg)
 
 测试图片的压缩率为　C = b / b_ = 850.4KB / 1.2MB =  70.9% 
 
@@ -145,9 +153,9 @@ make
 
 ![](images/result_2.png)
 
-![](images/result_4)
-
 可以看到在边缘处，原图和压缩后复原的图像有明显差别，这是与YUV数据存储的格式相关．
+
+![](images/result_4.jpg)
 
 测试图片的压缩率为　C = b / b_ =431.3KB / 1.2MB =  35.9%
 
