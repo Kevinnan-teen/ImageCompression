@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 11)
 
 include_directories(include)
 
-#file(GLOB SOURCES "src/*.cpp")
 
 #set(SOURCES src/main.cpp src/Image.cpp src/ImageIO.cpp src/tools.cpp)
 
